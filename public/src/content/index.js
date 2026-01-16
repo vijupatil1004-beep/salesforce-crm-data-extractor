@@ -1,9 +1,16 @@
-console.log("Salesforce CRM Data Extractor loaded");
 import { detectObjectType } from "./objectDetector";
 import { showStatus } from "./shadowStatus";
+import { extractOpportunity } from "./extractor/opportunities";
 const objectType = detectObjectType();
-if (objectType) {
- showStatus(`Detected Salesforce ${objectType}`, "success");
+if (objectType === "opportunities") {
+ showStatus("Extracting Opportunity...", "info");
+ const data = extractOpportunity();
+ chrome.runtime.sendMessage({
+   action: "SAVE_RECORD",
+   objectType: "opportunities",
+   record: data
+ });
+ showStatus("Opportunity extracted successfully", "success");
 } else {
- showStatus("Salesforce object not detected", "error");
+ showStatus("Unsupported object for extraction", "error");
 }
